@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>😌 Habis Pulang</title>
+
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+
+body{
+font-family:'Segoe UI',sans-serif;
+background:linear-gradient(45deg,#1b1f3b,#3a0ca3,#7209b7,#f72585,#4cc9f0);
+background-size:400% 400%;
+animation:bg 14s ease infinite;
+min-height:100vh;
+overflow:hidden;
+color:#fff;
+}
+
+@keyframes bg{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+.container{
+max-width:820px;
+margin:70px auto;
+text-align:center;
+padding:20px;
+position:relative;
+z-index:10;
+}
+
+h1{
+font-size:3.1rem;
+margin-bottom:15px;
+text-shadow:0 0 18px #ff9ecd;
+}
+
+.main-message{
+background:rgba(255,255,255,.15);
+backdrop-filter:blur(10px);
+padding:22px;
+border-radius:22px;
+box-shadow:0 10px 30px rgba(0,0,0,.35);
+font-size:1.5rem;
+margin-bottom:25px;
+}
+
+.action-btn{
+background:linear-gradient(to right,#f72585,#4cc9f0);
+color:white;
+border:none;
+padding:16px 40px;
+font-size:1.4rem;
+border-radius:50px;
+cursor:pointer;
+font-weight:bold;
+box-shadow:0 5px 20px rgba(247,37,133,.6);
+transition:.3s;
+}
+.action-btn:hover{transform:scale(1.08)}
+
+.popup{
+position:fixed;
+top:50%;left:50%;
+transform:translate(-50%,-50%) scale(0);
+background:white;
+padding:35px 25px;
+border-radius:26px;
+box-shadow:0 20px 50px rgba(0,0,0,.35);
+z-index:1000;
+text-align:center;
+width:90%;
+max-width:430px;
+transition:.4s;
+border:8px solid;
+color:#333;
+}
+.popup.active{transform:translate(-50%,-50%) scale(1)}
+
+.popup h2{font-size:2rem;margin-bottom:10px}
+.popup p{font-size:1.25rem;margin-bottom:15px}
+
+.popup-buttons{
+display:flex;
+flex-wrap:wrap;
+justify-content:center;
+gap:12px
+}
+
+.popup-btn{
+padding:10px 24px;
+border:none;
+border-radius:50px;
+font-size:1.1rem;
+cursor:pointer;
+background:#4cc9f0;
+color:white;
+font-weight:bold;
+transition:.25s;
+position:relative;
+}
+.popup-btn:hover{transform:scale(1.1)}
+
+.runaway{background:#f72585;}
+
+.overlay{
+position:fixed;
+top:0;left:0;width:100%;height:100%;
+background:rgba(0,0,0,.6);
+display:none;
+z-index:999;
+}
+.overlay.active{display:block}
+
+.photo{
+width:100%;
+max-height:300px;
+object-fit:cover;
+border-radius:18px;
+display:none;
+margin-top:12px;
+border:5px solid #eee;
+box-shadow:0 0 25px #f72585;
+}
+
+.floating{
+position:fixed;
+top:0;left:0;width:100%;height:100%;
+pointer-events:none;
+z-index:1;
+}
+.floating span{
+position:absolute;
+font-size:2.4rem;
+animation:float 14s linear infinite;
+opacity:.8;
+}
+@keyframes float{
+0%{transform:translateY(100vh);opacity:0}
+10%{opacity:.8}
+100%{transform:translateY(-120px);opacity:0}
+}
+
+.counter{
+position:fixed;
+top:20px;right:20px;
+background:rgba(255,255,255,.9);
+padding:10px 22px;
+border-radius:40px;
+font-weight:bold;
+font-size:1.2rem;
+z-index:50;
+color:#333;
+}
+.counter span{color:#f72585;font-size:1.5rem}
+</style>
+</head>
+
+<body>
+
+<div class="floating" id="float"></div>
+<div class="overlay" id="overlay"></div>
+<div class="counter">Scene: <span id="count">0</span>/10</div>
+
+<div class="container">
+<h1>😌 Habis Pulang</h1>
+<div class="main-message">
+<p>Mode aktif: <b>capek tapi disayang</b> 🤍</p>
+<p>Buka pelan-pelan aja ya.</p>
+</div>
+<button class="action-btn" id="startBtn">Aku udah sampai</button>
+</div>
+
+<!-- POPUP -->
+
+<div class="popup" id="p1" style="border-color:#f72585">
+<h2>Akhirnya kelar 😮‍💨</h2>
+<p>Hari ini pasti lumayan ya. Tapi abang sampai di sini, itu aja udah hebat.</p>
+<div class="popup-buttons">
+<button class="popup-btn" onclick="next(1)">Capek 😵</button>
+<button class="popup-btn" onclick="next(1)">Lumayan 😌</button>
+</div>
+</div>
+
+<div class="popup" id="p2" style="border-color:#4cc9f0">
+<h2>Stop bentar ✋</h2>
+<p>Lepasin beban dulu. Tarik napas… hembus… 😆</p>
+<div class="popup-buttons">
+<button class="popup-btn" onclick="next(2)">Udah 😄</button>
+</div>
+</div>
+
+<div class="popup" id="p3" style="border-color:#ffd166">
+<h2>Jujur dong 🤔</h2>
+<p>Habis hari panjang gini… masih manis nggak?</p>
+<div class="popup-buttons">
+<button class="popup-btn" onclick="showPhoto(3)">Masih 😎</button>
+<button class="popup-btn" onclick="next(3)">Capek tapi imut 😌</button>
+</div>
+<img src="vince.jpg" class="photo" id="img3">
+</div>
+
+<div class="popup" id="p4" style="border-color:#ff006e">
+<h2>📸 BREAKING NEWS</h2>
+<p><b>TOP 1 COWOK PALING MANIS</b><br>
+Ngalehin Kim Taehyung, Mingyu, Jaehyun, dll 😤</p>
+<div class="popup-buttons">
+<button class="popup-btn" onclick="showPhoto2(4)">Bukti 😏</button>
+</div>
+<img src="vince.jpeg" class="photo" id="img4">
+</div>
+
+<div class="popup" id="p5" style="border-color:#06d6a0">
+<h2>Valid 😌</h2>
+<p>Sistem tidak bisa menyangkal fakta.</p>
+<div class="popup-buttons">
+<button class="popup-btn" onclick="next(5)">Lanjut</button>
+</div>
+</div>
+
+<div class="popup" id="p6" style="border-color:#7209b7">
+<h2>Mini game 😏</h2>
+<p>Kalau ada pelukan sekarang… mau nggak?</p>
+<div class="popup-buttons">
+<button class="popup-btn runaway" onmouseover="run(this)">Mau 😆</button>
+<button class="popup-btn runaway" onmouseover="run(this)">Aku kerjain 😜</button>
+<button class="popup-btn" onclick="next(6)">Aku nyerah 😂</button>
+</div>
+</div>
+
+<div class="popup" id="p7" style="border-color:#f8961e">
+<h2>Hehe 🤭</h2>
+<p>Yang lari-lari itu emang nggak boleh dipencet.</p>
+<div class="popup-buttons">
+<button class="popup-btn" onclick="next(7)">Oke 😆</button>
+</div>
+</div>
+
+<div class="popup" id="p8" style="border-color:#4cc9f0">
+<h2>Sedikit serius 🤍</h2>
+<p>Capek itu wajar. Nggak semua hari harus kuat.</p>
+<div class="popup-buttons">
+<button class="popup-btn" onclick="next(8)">Aku baca 😌</button>
+</div>
+</div>
+
+<div class="popup" id="p9" style="border-color:#f72585">
+<h2>Udahan hari ini 🌙</h2>
+<p>Makan, mandi, rebahan. Jangan bawa beban ke kasur.</p>
+<div class="popup-buttons">
+<button class="popup-btn" onclick="next(9)">Siap 🤍</button>
+</div>
+</div>
+
+<div class="popup" id="p10" style="border-color:#3a0ca3">
+<h2>Mimpi indah 😴✨</h2>
+<p>Semoga tidur nyenyak dan besok lebih ringan.</p>
+<div class="popup-buttons">
+<button class="popup-btn" onclick="finish()">Aamiin 🌙</button>
+</div>
+</div>
+
+<audio id="bgm" loop>
+  <source src="Chris Brown - Under The Influence (Lyrics).mp3" type="audio/mpeg">
+</audio>
+
+<script>
+let c=0;
+const bgm=document.getElementById("bgm");
+
+function next(n){
+closeAll();
+c++;
+document.getElementById("count").innerText=c;
+document.getElementById("overlay").classList.add("active");
+document.getElementById("p"+(n+1)).classList.add("active");
+}
+
+function finish(){
+closeAll();
+bgm.pause();
+bgm.currentTime=0;
+alert("🌙 Udah ya… sekarang istirahat yang bener 😌🤍");
+document.getElementById("startBtn").style.display="inline-block";
+c=0;
+document.getElementById("count").innerText=0;
+}
+
+function closeAll(){
+document.getElementById("overlay").classList.remove("active");
+for(let i=1;i<=10;i++){
+let p=document.getElementById("p"+i);
+if(p) p.classList.remove("active");
+}
+}
+
+document.getElementById("startBtn").onclick=function(){
+this.style.display="none";
+bgm.play();
+next(0);
+}
+
+function showPhoto(id){
+document.getElementById("img3").style.display="block";
+setTimeout(()=>{next(id)},1600);
+}
+
+function showPhoto2(id){
+document.getElementById("img4").style.display="block";
+setTimeout(()=>{next(id)},1800);
+}
+
+function run(btn){
+const x = Math.random()*220-110;
+const y = Math.random()*140-70;
+btn.style.transform = `translate(${x}px,${y}px)`;
+}
+
+const float=document.getElementById("float");
+const emo=["🌙","✨","💖","🤍","😆","😴","🫶","⭐","😂"];
+for(let i=0;i<34;i++){
+let s=document.createElement("span");
+s.innerText=emo[Math.floor(Math.random()*emo.length)];
+s.style.left=Math.random()*100+"vw";
+s.style.animationDuration=(10+Math.random()*10)+"s";
+s.style.fontSize=(1.5+Math.random()*1.8)+"rem";
+float.appendChild(s);
+}
+</script>
+
+</body>
+</html>
