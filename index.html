@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<title>Petualangan Malam Fantasy Deluxe</title>
+
+<style>
+* {box-sizing:border-box;font-family:'Poppins',system-ui,sans-serif;}
+
+body{
+margin:0;
+min-height:100vh;
+background:linear-gradient(120deg,#6a00ff,#ff4ecd,#00f2ff,#7cff00);
+background-size:500% 500%;
+animation:bgMove 15s ease infinite;
+display:flex;
+justify-content:center;
+align-items:center;
+overflow:hidden;
+color:white;
+}
+
+@keyframes bgMove{
+0%{background-position:0% 50%}
+50%{background-position:100% 50%}
+100%{background-position:0% 50%}
+}
+
+.stars span{
+position:absolute;
+color:white;
+font-size:14px;
+animation:float 12s linear infinite;
+opacity:.7;
+}
+
+@keyframes float{
+from{transform:translateY(110vh) rotate(0deg);}
+to{transform:translateY(-10vh) rotate(360deg);}
+}
+
+.game-box{
+width:90%;
+max-width:540px;
+background:rgba(0,0,0,.35);
+backdrop-filter:blur(12px);
+border-radius:26px;
+padding:22px;
+box-shadow:0 0 35px rgba(255,255,255,.35);
+animation:pop 1s ease;
+z-index:5;
+}
+
+@keyframes pop{
+from{opacity:0;transform:scale(.85);}
+to{opacity:1;transform:scale(1);}
+}
+
+h1{text-align:center;margin:5px 0 10px;font-size:1.6rem;text-shadow:0 0 10px #fff;}
+
+.status{
+display:flex;
+justify-content:space-between;
+font-size:.85rem;
+margin-bottom:8px;
+opacity:.9;
+}
+
+#story{
+min-height:230px;
+line-height:1.6;
+margin-bottom:12px;
+animation:fade .5s ease;
+}
+
+@keyframes fade{
+from{opacity:0;transform:translateY(10px);}
+to{opacity:1;transform:translateY(0);}
+}
+
+.choices button{
+width:100%;
+margin:6px 0;
+padding:12px;
+border:none;
+border-radius:16px;
+font-size:1rem;
+font-weight:700;
+cursor:pointer;
+background:linear-gradient(135deg,#ffe259,#ffa751,#ff5acd);
+color:#3b004f;
+transition:.2s;
+box-shadow:0 0 10px rgba(255,255,255,.4);
+}
+
+.choices button:hover{
+transform:scale(1.06);
+box-shadow:0 0 18px rgba(255,255,255,.7);
+}
+
+.photo-box{
+display:none;
+text-align:center;
+margin-top:8px;
+}
+
+.photo-box img{
+max-width:100%;
+border-radius:18px;
+margin-top:8px;
+box-shadow:0 0 20px rgba(255,255,255,.6);
+animation:glow 2s ease-in-out infinite alternate;
+}
+
+@keyframes glow{
+from{box-shadow:0 0 12px #fff;}
+to{box-shadow:0 0 30px #ff5acd;}
+}
+
+.music-btn{
+position:fixed;
+bottom:15px;
+right:15px;
+padding:10px 14px;
+border:none;
+border-radius:50px;
+font-weight:700;
+background:linear-gradient(135deg,#00f2ff,#ff5acd);
+color:black;
+cursor:pointer;
+box-shadow:0 0 15px rgba(255,255,255,.6);
+z-index:10;
+}
+
+.footer{text-align:center;font-size:.75rem;opacity:.7;margin-top:6px;}
+</style>
+</head>
+
+<body>
+
+<div class="stars" id="stars"></div>
+
+<button class="music-btn" onclick="toggleMusic()">🎧 MUSIC</button>
+<audio id="bgm" loop>
+  <!-- GANTI link ini dengan musik favoritmu -->
+  <source src="https://cdn.pixabay.com/download/audio/2022/03/15/audio_9d6c9b2c68.mp3?filename=dreams-110734.mp3" type="audio/mpeg">
+</audio>
+
+<div class="game-box">
+<h1>🌈 Fantasy After Office – Deluxe</h1>
+
+<div class="status">
+<div>❤️ HP: <span id="hp">42</span></div>
+<div>☕ Mana: <span id="mana">1</span></div>
+<div>😂 Random: <span id="fun">0</span></div>
+</div>
+
+<div id="story"></div>
+<div class="choices" id="choices"></div>
+
+<div class="photo-box" id="photoBox">
+<p>📸 Masukkan foto ksatria lembur:</p>
+<input type="file" accept="image/*" onchange="loadPhoto(event)">
+<img id="preview">
+</div>
+
+<div class="footer">✨ Dunia fantasy tidak bertanggung jawab atas senyum tiba-tiba.</div>
+</div>
+
+<script>
+/* ⭐ bintang terbang */
+for(let i=0;i<35;i++){
+let s=document.createElement("span");
+s.textContent=["✨","⭐","🌟","💫"][Math.floor(Math.random()*4)];
+s.style.left=Math.random()*100+"vw";
+s.style.fontSize=(10+Math.random()*20)+"px";
+s.style.animationDuration=(8+Math.random()*10)+"s";
+document.getElementById("stars").appendChild(s);
+}
+
+/* 🎮 GAME */
+let hp=42,mana=1,fun=0;
+const story=document.getElementById("story");
+const choices=document.getElementById("choices");
+const photoBox=document.getElementById("photoBox");
+
+function updateStatus(){
+hp=Math.min(hp,100);
+document.getElementById("hp").textContent=hp;
+document.getElementById("mana").textContent=mana;
+document.getElementById("fun").textContent=fun;
+}
+
+function setScene(text,opts=[]){
+story.innerHTML=text;
+choices.innerHTML="";
+opts.forEach(o=>{
+let b=document.createElement("button");
+b.textContent=o.text;
+b.onclick=o.action;
+choices.appendChild(b);
+});
+}
+
+function start(){
+photoBox.style.display="none";
+setScene(`🌈✨ <b>PORTAL WARNA-WARNI TERBUKA</b><br><br>
+Abang Vince tersedot ke Dunia Fantasy Abis Pulang Kerja.<br>
+Status: Ksatria Lembur, HP setengah, rindu samar aktif.<br><br>
+Apa langkah pertamamu?`,[
+{text:"🛏 Rebahan brutal",action:rebahan},
+{text:"📱 Scroll nggak jelas",action:scroll},
+{text:"🔍 Cari makhluk aneh",action:makhluk},
+{text:"☕ Minum tapi kepikiran seseorang",action:minum}
+]);
+}
+
+function rebahan(){
+fun++;
+setScene(`🛏 Kamu jatuh di awan pelangi.<br>
+Awan berbentuk bantal. Bantal berbentuk ayam. Ayam pakai mahkota.<br><br>
+Ayam: “Ksatria… kamu capek tapi masih bonus imut.”`,[
+{text:"🐔 Ajak ayam selfie",action:fotoMode},
+{text:"😂 Ketawa nggak jelas",action:randomEvent},
+{text:"👾 Monster pikiran muncul",action:boss}
+]);updateStatus();
+}
+
+function scroll(){
+fun++;
+setScene(`📱 Scroll… scroll… scroll…<br>
+Yang muncul: bebek joget, mie jam 2 pagi, dan wajah seseorang yang bikin sistem error.<br><br>
+Notifikasi: HATI BUTUH EVENT.`,[
+{text:"🌈 Masuk kota permen",action:permen},
+{text:"📸 Klik wajah itu",action:fotoMode},
+{text:"👾 Lawan pikiran sendiri",action:boss}
+]);updateStatus();
+}
+
+function makhluk(){
+fun+=2;
+setScene(`🐥🐸🐱 Tiga makhluk muncul: Ayam Unicorn, Kodok Jetpack, Kucing Galaxy.<br><br>
+Mereka serempak: “Kamu butuh hiburan tidak penting.”`,[
+{text:"🍄 Hutan jamur neon",action:jamur},
+{text:"😂 Ketawa bareng",action:randomEvent},
+{text:"🎁 Buka kotak misterius",action:peti}
+]);updateStatus();
+}
+
+function minum(){
+mana++;
+setScene(`☕ Teguk pertama: haus.<br>
+Teguk kedua: mendingan.<br>
+Teguk ketiga: kok kepikiran seseorang.<br><br>
+Ini minum atau rindu?`,[
+{text:"🤍 Jujur dikit",action:peti},
+{text:"📸 Cari wajah itu",action:fotoMode},
+{text:"👾 Monster overthinking",action:boss}
+]);updateStatus();
+}
+
+function fotoMode(){
+photoBox.style.display="block";
+setScene(`📸 <b>MODE FANTASY CAMERA</b><br>
+Efek otomatis: mahkota awan, pedang pelangi, aura “habis kerja tapi gemas”.<br><br>
+Upload foto ksatria untuk membuka skill rahasia.`,[
+{text:"🎲 Event random",action:randomEvent},
+{text:"👾 Skip, lawan boss",action:boss}
+]);
+}
+
+function randomEvent(){
+const e=[
+"🎉 Kamu dapat Topi Pisang Keberuntungan.",
+"🦄 Unicorn lewat sambil kentut glitter.",
+"😂 Kamu ketawa sendiri tanpa sebab.",
+"🌈 Langit berubah rasa permen kapas.",
+"🐣 Anak ayam berjubah memberi tos."
+];
+fun++;
+setScene(`🎲 <b>EVENT RANDOM</b><br><br>${e[Math.floor(Math.random()*e.length)]}<br><br>
+Efek: senyum bocor.`,[
+{text:"➡️ Lanjut",action:makhluk},
+{text:"👾 Lawan boss malam",action:boss}
+]);updateStatus();
+}
+
+function jamur(){
+setScene(`🍄 Hutan jamur neon bersinar.<br>
+Jamur: “KAMU CAPEK YA. TAPI KAMU KEREN.”<br><br>
+Satu jamur buka tangan…`,[
+{text:"🤗 Terima pelukan jamur",action:peti},
+{text:"📸 Selfie jamur",action:fotoMode},
+{text:"😂 Lari zigzag",action:randomEvent}
+]);
+}
+
+function permen(){
+setScene(`🍭 Kota permen emosional.<br>
+Slime capek nempel di kaki. Bola lampu rindu melayang-layang.<br><br>
+Sistem overload manis.`,[
+{text:"🎁 Ambil permen misterius",action:peti},
+{text:"😂 Ketawa bareng slime",action:randomEvent},
+{text:"👾 Pikiran menyerang",action:boss}
+]);
+}
+
+function boss(){
+setScene(`👾 <b>BOSS: MONSTER OVERTHINKING</b><br>
+Bentuk: awan hitam pakai sandal.<br>
+Skill: muter ulang hari ini pas mau tidur.<br><br>
+Cara mengalahkan:`,[
+{text:"😂 Ketawa absurd",action:peti},
+{text:"💬 Chat seseorang",action:peti},
+{text:"😴 Pura-pura tidur",action:peti}
+]);
+}
+
+function peti(){
+hp+=10;
+setScene(`🎁 <b>PETI PELANGI TERBUKA</b><br><br>
+Isinya tulisan:<br>
+“Terima kasih sudah pulang hari ini. Ada seseorang di dunia nyata yang senang karena kamu ada.”<br><br>
+❤️ HP +10`,[
+{text:"🌙 Akhiri petualangan",action:ending},
+{text:"🔄 Main lagi",action:start}
+]);updateStatus();
+}
+
+function ending(){
+photoBox.style.display="none";
+setScene(`🌙 <b>PORTAL PULANG TERBUKA</b><br><br>
+Peri kecil: “Kalau kamu rebahan dan senyum sendiri… itu bug. Jangan diperbaiki.”<br><br>
+✨ PETUALANGAN SELESAI ✨`,[
+{text:"🔁 Ulangi petualangan",action:start}
+]);
+}
+
+function loadPhoto(e){
+document.getElementById("preview").src=URL.createObjectURL(e.target.files[0]);
+}
+
+/* 🎧 musik */
+let playing=false;
+function toggleMusic(){
+const bgm=document.getElementById("bgm");
+if(!playing){bgm.play();playing=true;}
+else{bgm.pause();playing=false;}
+}
+
+start();
+</script>
+
+</body>
+</html>
